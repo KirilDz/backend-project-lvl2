@@ -1,0 +1,19 @@
+{
+  "name": "backend-project-lvl2",
+  "version": "1.0.0",
+  "description": "'Searching difference between files'",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KirilDz/backend-project-lvl2.git"
+  },
+  "author": "KirilDz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KirilDz/backend-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/KirilDz/backend-project-lvl2#readme"
+}
