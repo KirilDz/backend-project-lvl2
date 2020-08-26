@@ -1,42 +1,28 @@
-import fs from 'fs';
+import path from 'path';
+import fs from "fs";
 
-const file1Read = fs.readFileSync('./file1.json', 'utf-8');
-const file2Read = fs.readFileSync('./file2.json', 'utf-8');
 
-const file1 = JSON.parse(file1Read);
-const file2 = JSON.parse(file2Read);
+export default (filepath1, filepath2) => {
 
-console.log(file1, file2)
+    const file1 = JSON.parse(fs.readFileSync(path.resolve(filepath1), 'utf-8'));
+    const file2 = JSON.parse(fs.readFileSync(path.resolve(filepath2), 'utf-8'));
 
-const diff = (file1, file2) => {
+    const concatedKeys = [...Object.keys(file1).sort(), ...Object.keys(file2).sort()];
 
-    const resultArr = [];
+    const uniqKeys = [...new Set(concatedKeys)];
 
-    const sortedOneKeys = Object.keys(file1).sort();
-    console.log(sortedOneKeys)
-    const sortedTwoKeys = Object.keys(file2).sort();
-    console.log(sortedTwoKeys)
-    const concatArrays = [...sortedOneKeys, ...sortedTwoKeys];
-    const uniq = [...new Set(concatArrays)];
-    console.log(concatArrays)
-    console.log(uniq)
-
-    for (const uniqEl of uniq) {
-        if (file1.hasOwnProperty(uniqEl) && file2.hasOwnProperty(uniqEl)) {
-            file1[uniqEl] === file2[uniqEl]
-                ? resultArr.push(` ${uniqEl}: ${file1[uniqEl]}\n`)
-                : resultArr.push(`- ${uniqEl}: ${file1[uniqEl]}\n + ${uniqEl}: ${file2[uniqEl]}\n`)
-        } else if (!file1.hasOwnProperty(uniqEl)) {
-            resultArr.push(`+ ${uniqEl}: ${file2[uniqEl]}\n`);
+    const diff = uniqKeys.map(el => {
+        if (file1.hasOwnProperty(el) && file2.hasOwnProperty(el)) {
+            return  file1[el] === file2[el]
+                ? `   ${el}: ${file1[el]}\n`
+                : ` - ${el}: ${file1[el]}\n + ${el}: ${file2[el]}\n`
+        } else if (!file1.hasOwnProperty(el)) {
+            return ` + ${el}: ${file2[el]}\n`
         } else {
-            resultArr.push(`- ${uniqEl}: ${file1[uniqEl]}\n`);
+            return ` - ${el}: ${file1[el]}\n`
         }
-    }
-    console.log(resultArr.join(('')))
+    })
+
+    console.log(`{\n${diff.join((''))}}`)
 
 }
-
-diff(file1, file2);
-
-
-
