@@ -22,4 +22,9 @@ export default (filepath1, filepath2) => {
   });
 
   console.log(`{\n${diff.join((''))}}`);
+  return `{\n${diff.join((''))}}`;
 };
+
+// export default (n, n1) => {
+//   return n + n1;
+// }
