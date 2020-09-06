@@ -1,9 +1,9 @@
-import path from 'path';
-import fs from 'fs';
+import {parse} from './src/parsers'
 
 export default (filepath1, filepath2) => {
-  const file1 = JSON.parse(fs.readFileSync(path.resolve(filepath1), 'utf-8'));
-  const file2 = JSON.parse(fs.readFileSync(path.resolve(filepath2), 'utf-8'));
+
+  const file1 = parse(filepath1);
+  const file2 = parse(filepath2);
 
   const concatedKeys = [...Object.keys(file1).sort(), ...Object.keys(file2).sort()];
 
@@ -24,7 +24,3 @@ export default (filepath1, filepath2) => {
   console.log(`{\n${diff.join((''))}}`);
   return `{\n${diff.join((''))}}`;
 };
-
-// export default (n, n1) => {
-//   return n + n1;
-// }
