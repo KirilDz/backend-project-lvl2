@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
-import {test} from "@jest/globals";
-import diff from '../index';
+import { test } from '@jest/globals';
+import diff from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,6 +21,17 @@ test('JSON test', () => {
 
 test('YML test', () => {
   expect(diff(getFixturePath('file1.yml'), getFixturePath('file2.yml'))).toEqual('{\n'
+      + ' - follow: false\n'
+      + '   host: hexlet.io\n'
+      + ' - proxy: 123.234.53.22\n'
+      + ' - timeout: 50\n'
+      + ' + timeout: 20\n'
+      + ' + verbose: true\n'
+      + '}');
+});
+
+test('INI test', () => {
+  expect(diff(getFixturePath('file1.ini'), getFixturePath('file2.ini'))).toEqual('{\n'
       + ' - follow: false\n'
       + '   host: hexlet.io\n'
       + ' - proxy: 123.234.53.22\n'
