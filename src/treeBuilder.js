@@ -1,17 +1,27 @@
-export default (data1, data2) => {
-  const concatedKeys = [...Object.keys(data1).sort(), ...Object.keys(data2).sort()];
-  const uniqKeys = [...new Set(concatedKeys)];
+export default (dat1, dat2) => {
 
-  return uniqKeys.map((el) => {
-    if (Object.prototype.hasOwnProperty.call(data1, el)
-            && Object.prototype.hasOwnProperty.call(data2, el)) {
-      return data1[el] === data2[el]
-        ? `   ${el}: ${data1[el]}\n`
-        : ` - ${el}: ${data1[el]}\n + ${el}: ${data2[el]}\n`;
-    } if (!Object.prototype.hasOwnProperty.call(data1, el)) {
-      return ` + ${el}: ${data2[el]}\n`;
-    }
+    const concatedKeys = [...Object.keys(dat1).sort(), ...Object.keys(dat2).sort()];
+    const uniqKeys = [...new Set(concatedKeys)];
 
-    return ` - ${el}: ${data1[el]}\n`;
-  });
+    const treeEl = uniqKeys.reduce((acc, el) => {
+
+        if (Object.prototype.hasOwnProperty.call(dat1, el)
+                    && Object.prototype.hasOwnProperty.call(dat2, el)) {
+             dat1[el] === dat2[el]
+            ? acc['same'] ? acc['same'][el] = dat1[el] : acc['same'] = {[el] : dat1[el]}
+            : acc['changed'] ? acc['changed'][el] = [dat1[el], dat2[el]] : acc['changed'] = {[el]: [dat1[el], dat2[el]]};
+        }
+
+        if (!Object.prototype.hasOwnProperty.call(dat1, el)) {
+            acc['added'] ? acc['added'][el] = dat2[el] : acc['added'] = {[el]: dat2[el]};
+        }
+
+        if (Object.prototype.hasOwnProperty.call(dat1, el) && !Object.prototype.hasOwnProperty.call(dat2, el)) {
+            acc['deleted'] ? acc['deleted'][el] = dat1[el] : acc['deleted'] = {[el]: dat1[el]};
+        }
+
+        return acc;
+    }, {});
+
+    return Array(treeEl);
 };
