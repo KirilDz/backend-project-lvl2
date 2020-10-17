@@ -66,9 +66,10 @@ import _ from 'lodash';
 
 const types = {
     sameValues: 0,
-    differentValues: 1,
+    changedValue: 1,
     treeValues: 2,
-    uniqKeys: 3
+    added: 3,
+    deleted: 4
 }
 
 const obj1 = {
@@ -92,7 +93,8 @@ const obj2 = {
 }
 
 const dfs = (o1, o2) => {
-    const allKeys = [...new Set([...Object.keys(o1), ...Object.keys(o2)])];
+    const allKeys = [...new Set([...Object.keys(o1), ...Object.keys(o2)])].sort();
+    console.log(allKeys)
     const data = allKeys.map(el => {
         if (Object.prototype.hasOwnProperty.call(o1, el) && Object.prototype.hasOwnProperty.call(o2, el)) {
             if (o1[el] === o2[el]) {
@@ -112,23 +114,60 @@ const dfs = (o1, o2) => {
                 } else {
                     return {
                         keyName: el,
-                        difference: types.differentValues,
+                        difference: types.changedValue,
                         value: [o1[el], o2[el]]
                     }
                 }
             }
         } else {
-            return {
-                keyName: el,
-                difference: types.uniqKeys,
-                value: o1[el] || o2[el] ? o1[el] || o2[el] : false
+            if (Object.prototype.hasOwnProperty.call(o1, el)) {
+                return {
+                    keyName: el,
+                    difference: types.deleted,
+                    value: o1[el]
+                }
+            } else {
+                return {
+                    keyName: el,
+                    difference: types.added,
+                    value: o2[el]
+                }
             }
+
         }
     });
+    // console.log(data)
     return data;
 }
 
-dfs(obj1, obj2);
+const data = dfs(obj1, obj2);
+
+
+const parser = (data) => {
+    const string = data.reduce((acc, el) => {
+        if (el.difference === 0) {
+            acc += `\n   ${el.keyName}: ${el.value}`;
+        }
+        if (el.difference === 1) {
+            acc += `\n - ${el.keyName}: ${el.value[0]}\n + ${el.keyName}: ${el.value[1]}`
+        }
+        if (el.difference === 2) {
+            el
+        }
+        if (el.difference === 3) {
+            acc += `\n + ${el.keyName}: ${el.value}`
+        }
+        if (el.difference === 4) {
+            acc += `\n - ${el.keyName}: ${el.value}`
+        }
+        return acc;
+    }, '');
+    console.log(`{${string}\n}`)
+    return string;
+}
+
+parser(data)
+
 
 
 // export const dfs = (o1, o2) => {
