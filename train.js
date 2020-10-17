@@ -64,6 +64,13 @@ import _ from 'lodash';
 //     }
 // }
 
+const types = {
+    sameValues: 0,
+    differentValues: 1,
+    treeValues: 2,
+    uniqKeys: 3
+}
+
 const obj1 = {
     "host":"hexlet.io",
     "timeout":50,
@@ -84,54 +91,93 @@ const obj2 = {
     }
 }
 
-
-export const dfs = (o1, o2) => {
-    const uniqKeys = [...new Set([...Object.keys(o1), ...Object.keys(o2)])];
-    console.log('This is the uniqKeys');
-    console.log(uniqKeys)
-    const data = uniqKeys.reduce((acc, el) => {
-        if (isObject(o1[el]) && o2.hasOwnProperty(el)) {
-            console.log(`this elements are: `)
-            console.log(o1[el])
-            console.log(o2[el])
-            console.log('(=))))))))))))')
-            const item = el;
-            const recursion = dfs(o1[el], o2[el]);
-            console.log(recursion)
-            acc['equal']
-                ? acc.equal.push({[item]: recursion})
-                : acc['equal'] = [{[item]: recursion}];
-        } else {
+const dfs = (o1, o2) => {
+    const allKeys = [...new Set([...Object.keys(o1), ...Object.keys(o2)])];
+    const data = allKeys.map(el => {
+        if (Object.prototype.hasOwnProperty.call(o1, el) && Object.prototype.hasOwnProperty.call(o2, el)) {
             if (o1[el] === o2[el]) {
-                console.log('This elements are equal')
-                const item = el;
-                acc['equal']
-                    ? acc.equal.push({[item]: o1[el]})
-                    : acc['equal'] = [{[item]: o1[el]}];
-                console.log(o1[el])
-                console.log(o2[el])
-            } else if (Object.prototype.hasOwnProperty.call(o1, el) && !Object.prototype.hasOwnProperty.call(o2, el)) {
-                const item = el;
-                acc['minus']
-                    ? acc.minus.push({[item]: o1[el]})
-                    : acc['minus'] = [{[item]: o1[el]}];
-                console.log('First object has this prop but second doesn\'t');
-                console.log(el)
-            } else if (!Object.prototype.hasOwnProperty.call(o1, el) && Object.prototype.hasOwnProperty.call(o2, el)) {
-                console.log('Second object has this prop but first doesn\'t');
-                const item = el;
-                acc['plus']
-                    ? acc.minus.push({[item]: o2[el]})
-                    : acc['plus'] = [{[item]: o2[el]}];
-                console.log(el)
+                return {
+                    keyName: el,
+                    difference: types.sameValues,
+                    value: o1[el]
+                };
+            } else {
+                if (isObject(o1[el]) && isObject(o2[el])) {
+                    const recursion = dfs(o1[el], o2[el]);
+                    return {
+                        keyName: el,
+                        difference: types.treeValues,
+                        value: recursion
+                    }
+                } else {
+                    return {
+                        keyName: el,
+                        difference: types.differentValues,
+                        value: [o1[el], o2[el]]
+                    }
+                }
+            }
+        } else {
+            return {
+                keyName: el,
+                difference: types.uniqKeys,
+                value: o1[el] || o2[el] ? o1[el] || o2[el] : false
             }
         }
-        return acc;
-    }, {});
-
+    });
     return data;
 }
 
+dfs(obj1, obj2);
 
-console.log(dfs(obj1, obj2))
+
+// export const dfs = (o1, o2) => {
+//     const uniqKeys = [...new Set([...Object.keys(o1), ...Object.keys(o2)])];
+//     console.log('This is the uniqKeys');
+//     console.log(uniqKeys)
+//     const data = uniqKeys.reduce((acc, el) => {
+//         if (isObject(o1[el]) && o2.hasOwnProperty(el)) {
+//             console.log(`this elements are: `)
+//             console.log(o1[el])
+//             console.log(o2[el])
+//             console.log('(=))))))))))))')
+//             const item = el;
+//             const recursion = dfs(o1[el], o2[el]);
+//             console.log(recursion)
+//             acc['equal']
+//                 ? acc.equal.push({[item]: recursion})
+//                 : acc['equal'] = [{[item]: recursion}];
+//         } else {
+//             if (o1[el] === o2[el]) {
+//                 console.log('This elements are equal')
+//                 const item = el;
+//                 acc['equal']
+//                     ? acc.equal.push({[item]: o1[el]})
+//                     : acc['equal'] = [{[item]: o1[el]}];
+//                 console.log(o1[el])
+//                 console.log(o2[el])
+//             } else if (Object.prototype.hasOwnProperty.call(o1, el) && !Object.prototype.hasOwnProperty.call(o2, el)) {
+//                 const item = el;
+//                 acc['minus']
+//                     ? acc.minus.push({[item]: o1[el]})
+//                     : acc['minus'] = [{[item]: o1[el]}];
+//                 console.log('First object has this prop but second doesn\'t');
+//                 console.log(el)
+//             } else if (!Object.prototype.hasOwnProperty.call(o1, el) && Object.prototype.hasOwnProperty.call(o2, el)) {
+//                 console.log('Second object has this prop but first doesn\'t');
+//                 const item = el;
+//                 acc['plus']
+//                     ? acc.minus.push({[item]: o2[el]})
+//                     : acc['plus'] = [{[item]: o2[el]}];
+//                 console.log(el)
+//             }
+//         }
+//         return acc;
+//     }, {});
+//
+//     return data;
+// }
+//
+//
+// console.log(dfs(obj1, obj2))
 

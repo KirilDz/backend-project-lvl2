@@ -39,6 +39,7 @@
     "eslint-plugin-jest": "^23.20.0",
     "fs": "0.0.1-security",
     "jest": "^26.4.2",
-    "jest-cli": "^26.4.2"
+    "jest-cli": "^26.4.2",
+    "lodash": "^4.17.20"
   }
 }
