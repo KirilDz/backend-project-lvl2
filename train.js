@@ -1,66 +1,87 @@
 import {isObject, getChildren} from './src/utils.js'
 import _ from 'lodash';
 
+const obj1 = {
+    "common": {
+        "setting1": "Value 1",
+        "setting2": 200,
+        "setting3": true,
+        "setting6": {
+            "key": "value",
+            "doge": {
+                "wow": "too much"
+            }
+        }
+    },
+    "group1": {
+        "baz": "bas",
+        "foo": "bar",
+        "nest": {
+            "key": "value"
+        }
+    },
+    "group2": {
+        "abc": 12345,
+        "deep": {
+            "id": 45
+        }
+    }
+}
+
+const obj2 = {
+    "common": {
+        "follow": false,
+        "setting1": "Value 1",
+        "setting3": {
+            "key": "value"
+        },
+        "setting4": "blah blah",
+        "setting5": {
+            "key5": "value5"
+        },
+        "setting6": {
+            "key": "value",
+            "ops": "vops",
+            "doge": {
+                "wow": "so much"
+            }
+        }
+    },
+
+    "group1": {
+        "foo": "bar",
+        "baz": "bars",
+        "nest": "str"
+    },
+
+    "group3": {
+        "fee": 100500,
+        "deep": {
+            "id": {
+                "number": 45
+            }
+        }
+    }
+}
+
+
 // const obj1 = {
-//     "common": {
-//         "setting1": "Value 1",
-//         "setting2": 200,
-//         "setting3": true,
-//         "setting6": {
-//             "key": "value",
-//             "doge": {
-//                 "wow": "too much"
-//             }
-//         }
-//     },
-//     "group1": {
-//         "baz": "bas",
-//         "foo": "bar",
-//         "nest": {
-//             "key": "value"
-//         }
-//     },
-//     "group2": {
-//         "abc": 12345,
-//         "deep": {
-//             "id": 45
-//         }
+//     "host":"hexlet.io",
+//     "timeout":50,
+//     "proxy":"123.234.53.22",
+//     "follow":false,
+//     "next": {
+//         "number": 5
 //     }
 // }
 //
+//
 // const obj2 = {
-//     "common": {
-//         "follow": false,
-//         "setting1": "Value 1",
-//         "setting3": {
-//             "key": "value"
-//         },
-//         "setting4": "blah blah",
-//         "setting5": {
-//             "key5": "value5"
-//         },
-//         "setting6": {
-//             "key": "value",
-//             "ops": "vops",
-//             "doge": {
-//                 "wow": "so much"
-//             }
-//         }
-//     },
-//
-//     "group1": {
-//         "foo": "bar",
-//         "baz": "bars",
-//         "nest": "str"
-//     },
-//
-//     "group3": {
-//         "fee": 100500,
-//         "deep": {
-//             "id": {
-//                 "number": 45
-//             }
-//         }
+//     "timeout":20,
+//     "verbose":true,
+//     "host":"hexlet.io",
+//     "next": {
+//         "rating": 4
 //     }
 // }
 
@@ -70,26 +91,6 @@ const types = {
     treeValues: 2,
     added: 3,
     deleted: 4
-}
-
-const obj1 = {
-    "host":"hexlet.io",
-    "timeout":50,
-    "proxy":"123.234.53.22",
-    "follow":false,
-    "next": {
-        "number": 5
-    }
-}
-
-
-const obj2 = {
-    "timeout":20,
-    "verbose":true,
-    "host":"hexlet.io",
-    "next": {
-        "rating": 4
-    }
 }
 
 const dfs = (o1, o2) => {
@@ -136,7 +137,7 @@ const dfs = (o1, o2) => {
 
         }
     });
-    // console.log(data)
+    console.log(data)
     return data;
 }
 
@@ -152,7 +153,8 @@ const parser = (data) => {
             acc += `\n - ${el.keyName}: ${el.value[0]}\n + ${el.keyName}: ${el.value[1]}`
         }
         if (el.difference === 2) {
-            el
+            const recursion = parser(el.value);
+            acc += `\n   ${el.keyName}: {${recursion}\n}`
         }
         if (el.difference === 3) {
             acc += `\n + ${el.keyName}: ${el.value}`
