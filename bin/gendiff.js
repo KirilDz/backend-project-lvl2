@@ -14,5 +14,3 @@ program
   .action(diff);
 
 program.parse(process.argv);
-
-// console.log(program.args);

@@ -1,27 +1,22 @@
-export default (dat1, dat2) => {
+import { isObject, diffBuilder, types } from './utils.js';
 
-    const concatedKeys = [...Object.keys(dat1).sort(), ...Object.keys(dat2).sort()];
-    const uniqKeys = [...new Set(concatedKeys)];
-
-    const treeEl = uniqKeys.reduce((acc, el) => {
-
-        if (Object.prototype.hasOwnProperty.call(dat1, el)
-                    && Object.prototype.hasOwnProperty.call(dat2, el)) {
-             dat1[el] === dat2[el]
-            ? acc['same'] ? acc['same'][el] = dat1[el] : acc['same'] = {[el] : dat1[el]}
-            : acc['changed'] ? acc['changed'][el] = [dat1[el], dat2[el]] : acc['changed'] = {[el]: [dat1[el], dat2[el]]};
-        }
-
-        if (!Object.prototype.hasOwnProperty.call(dat1, el)) {
-            acc['added'] ? acc['added'][el] = dat2[el] : acc['added'] = {[el]: dat2[el]};
-        }
-
-        if (Object.prototype.hasOwnProperty.call(dat1, el) && !Object.prototype.hasOwnProperty.call(dat2, el)) {
-            acc['deleted'] ? acc['deleted'][el] = dat1[el] : acc['deleted'] = {[el]: dat1[el]};
-        }
-
-        return acc;
-    }, {});
-
-    return Array(treeEl);
+export const dfs = (data1, data2, level = 1) => {
+  const allKeys = [...new Set([...Object.keys(data1), ...Object.keys(data2)])].sort();
+  const data = allKeys.map((el) => {
+    if (Object.prototype.hasOwnProperty.call(data1, el) && Object.prototype.hasOwnProperty.call(data2, el)) {
+      if (data1[el] === data2[el]) {
+        return diffBuilder(el, types.sameValues, data1[el], level);
+      } if (isObject(data1[el]) && isObject(data2[el])) {
+        const recursion = dfs(data1[el], data2[el], level += 1);
+        level -= 1;
+        return diffBuilder(el, types.treeValues, recursion, level);
+      }
+      return diffBuilder(el, types.changedValue, [data1[el], data2[el]], level);
+    } if (Object.prototype.hasOwnProperty.call(data1, el)) {
+      return diffBuilder(el, types.deleted, data1[el], level);
+    }
+    return diffBuilder(el, types.added, data2[el], level);
+  });
+  console.log(data);
+  return data;
 };
