@@ -1,11 +1,12 @@
 import parse from './src/parse.js';
-import { dfs } from './src/treeBuilder.js';
-import { formatter } from './src/stylish.js';
+import { treeDifferenceBuilder, levels } from './src/treeBuilder.js';
+import { stylish } from "./src/stylish.js";
 
 export default (filePath1, filePath2) => {
-  const parsedData = parse(filePath1, filePath2);
-  const tree = dfs(parsedData[0], parsedData[1]);
-  const output = formatter(tree);
-  console.log(`${output}}`);
-  return `${output}}`;
+    const parsedData = parse(filePath1, filePath2);
+    const treeDifference = treeDifferenceBuilder(parsedData[0], parsedData[1]);
+    console.log(levels)
+    console.log(treeDifference)
+    // const stylishData = stylish(treeDifference);
+    // console.log(stylishData)
 };
