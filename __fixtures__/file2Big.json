@@ -2,7 +2,7 @@
   "common": {
     "follow": false,
     "setting1": "Value 1",
-    "setting3": null,
+    "setting3": 123,
     "setting4": "blah blah",
     "setting5": {
       "key5": "value5"
@@ -21,11 +21,11 @@
     "nest": "str"
   },
   "group3": {
+    "fee": 100500,
     "deep": {
       "id": {
         "number": 45
       }
-    },
-    "fee": 100500
+    }
   }
 }
