@@ -1,43 +1,68 @@
-
+import { spaceMaker, objectToString, isObject } from "./src/utils.js";
 
 const obj = {
-    "deep": {
-        "id": {
-            "number": 45
-        },
-        "routes": {
-            "http": 'www.google.com',
-            "status": false,
-            "request": {
-                "info": true
+    deep: {
+        id: {
+            number: 45,
+            cucumber: {
+                isVegatable: true
             }
+        },
+        next: {
+            isTrue: false
         }
     },
-    "fee": 100500
+    fee: 100500,
+    mono: true,
+    fixed: 'adfasdf',
+    oneMore: {
+        andOneMore: {
+            last: 0
+        }
+    },
+    stat: {
+        info: false
+    }
 };
 
-const temporary = {};
-
-const objToString = (data, level = 1) => {
-    const keys = Object.keys(data);
-    for (const key of keys) {
-
-        temporary[key] = level ;
-
+const obj2 = {
+    abc: 12345,
+    deep: {
+        id: 45
     }
-    return keys.reduce((acc, el) => {
-        if (typeof data[el] === 'object') {
-            const children = objToString(data[el], level += 1);
-            acc += `\n${el}: ${children}`;
-            return acc;
-        }
-        acc += `\n${el}: ${data[el]}`;
-        return acc;
-    }, '');
 }
 
+const splitObj = (obj, parent = null, level = 1) => {
+
+    console.log(Object.keys(obj), level, parent);
+
+    return Object.keys(obj).map(el => {
+
+        const itemDescription = {};
+
+        itemDescription['name'] = el;
+        itemDescription['parent'] = parent;
+        itemDescription['level'] = level;
+        itemDescription['value'] = isObject(obj[el]) ? 'obj' : obj[el];
+
+        if (isObject(obj[el])) {
+            // трабла тут в том, что при переходе на второй уровень, я его считаю как первый, потому что стоит проверка на null нужно обойти это
+            const children = splitObj(obj[el], el, parent ? level += 1 : 1);
+            itemDescription['children'] = children;
+
+            return itemDescription;
+        }
+
+        return itemDescription;
+
+    });
+}
+
+console.log(splitObj(obj)[0].children[0])
 
 
-console.log(objToString(obj));
 
-console.log(temporary)
+
+
+
+
