@@ -1,9 +1,6 @@
 {
-  "host":"hexlet.io",
-  "timeout":null,
-  "proxy":"123.234.53.22",
-  "follow":false,
-  "fuck": {
-    "name": "lox"
-  }
+  "host": "hexlet.io",
+  "timeout": 50,
+  "proxy": "123.234.53.22",
+  "follow": false
 }
