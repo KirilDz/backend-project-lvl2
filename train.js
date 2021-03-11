@@ -1,20 +1,9 @@
-import { isObject, spaceMaker } from "./src/utils.js";
+import yaml from 'js-yaml';
+import fs from 'fs';
+import path from 'path';
 
-const obj = {
-    deff: 'one',
-    next: 'prev',
-    some: {
-        wow: {
-            integer: null,
-            deff: undefined
-        },
-        comtsamone: 3,
-        lala: 'hi'
-    },
-    prev: true,
-    onemore: false
-};
+const data1 = yaml.load(fs.readFileSync('__fixtures__/secondDoc.yml', 'utf-8'));
+const data2 = JSON.parse(fs.readFileSync('__fixtures__/secondDoc.json', 'utf-8'));
 
-console.log(toString(splited));
-
-
+console.log(data1);
+console.log(data2);
