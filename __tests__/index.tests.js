@@ -64,13 +64,13 @@ const plainExample = '\n'
     + 'Property \'group1.nest\' was updated. From [complex value] to \'str\'\n'
     + 'Property \'group2\' was removed\n'
     + 'Property \'group3\' was added with value: [complex value]';
-const toJSONExample = '[{"key":"common","children":[{"key":"follow","added":false},{"key":"setting1","same":"Value 1"},' +
-    '{"key":"setting2","removed":200},{"key":"setting3","updated":[true,null]},{"key":"setting4","added":"blah blah"},' +
-    '{"key":"setting5","added":{"key5":"value5"}},{"key":"setting6","children":[' +
-    '{"key":"doge","children":[{"key":"wow","updated":["","so much"]}]},{"key":"key",' +
-    '"same":"value"},{"key":"ops","added":"vops"}]}]},{"key":"group1","children":[{"key":"baz","updated":' +
-    '["bas","bars"]},{"key":"foo","same":"bar"},{"key":"nest","updated":[{"key":"value"},"str"]}]},{"key":"group2","removed":' +
-    '{"abc":12345,"deep":{"id":45}}},{"key":"group3","added":{"deep":{"id":{"number":45}},"fee":100500}}]';
+const toJSONExample = '[{"key":"common","children":[{"key":"follow","added":false},{"key":"setting1","same":"Value 1"},'
+    + '{"key":"setting2","removed":200},{"key":"setting3","updated":[true,null]},{"key":"setting4","added":"blah blah"},'
+    + '{"key":"setting5","added":{"key5":"value5"}},{"key":"setting6","children":['
+    + '{"key":"doge","children":[{"key":"wow","updated":["","so much"]}]},{"key":"key",'
+    + '"same":"value"},{"key":"ops","added":"vops"}]}]},{"key":"group1","children":[{"key":"baz","updated":'
+    + '["bas","bars"]},{"key":"foo","same":"bar"},{"key":"nest","updated":[{"key":"value"},"str"]}]},{"key":"group2","removed":'
+    + '{"abc":12345,"deep":{"id":45}}},{"key":"group3","added":{"deep":{"id":{"number":45}},"fee":100500}}]';
 
 test('JSON test Stylish', () => {
   expect(diff(getFixturePath('firstDoc.json'), getFixturePath('secondDoc.json'))).toEqual(stylishExample);
@@ -81,13 +81,13 @@ test('YML test Stylish', () => {
 });
 
 test('JSON test Plain', () => {
-  expect(diff(getFixturePath('firstDoc.json'), getFixturePath('secondDoc.json'))).toEqual(plainExample);
+  expect(diff(getFixturePath('firstDoc.json'), getFixturePath('secondDoc.json'), 'plain')).toEqual(plainExample);
 });
 
 test('YML test Plain', () => {
-  expect(diff(getFixturePath('firstDoc.yml'), getFixturePath('secondDoc.yml'))).toEqual(plainExample);
+  expect(diff(getFixturePath('firstDoc.yml'), getFixturePath('secondDoc.yml'), 'plain')).toEqual(plainExample);
 });
 
 test('ToJSON test', () => {
-  expect(diff(getFixturePath('firstDoc.json'), getFixturePath('secondDoc.json'))).toEqual(toJSONExample);
+  expect(diff(getFixturePath('firstDoc.json'), getFixturePath('secondDoc.json'), 'toJSON')).toEqual(toJSONExample);
 });

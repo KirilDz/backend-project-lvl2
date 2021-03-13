@@ -4,18 +4,21 @@ import stylish from './src/formatters/stylish.js';
 import plain from './src/formatters/plain.js';
 import toJSON from './src/formatters/json.js';
 
-export default (filePath1, filePath2) => {
+export default (filePath1, filePath2, formatter = 'stylish') => {
   const parsedData = parse(filePath1, filePath2);
   const treeDifference = treeDifferenceBuilder(parsedData[0], parsedData[1]);
-  // const style = stylish(treeDifference);
-  //
-  // return style;
 
-  // const plainOutput = plain(treeDifference);
-  // console.log(plainOutput);
-  // return plainOutput;
+  if (formatter === 'stylish') {
+    return stylish(treeDifference);
+  }
 
-  console.log(toJSON(treeDifference))
+  if (formatter === 'plain') {
+    return plain(treeDifference);
+  }
 
-  return toJSON(treeDifference)
+  if (formatter === 'toJSON') {
+    return toJSON(treeDifference);
+  }
+
+  return treeDifference;
 };
