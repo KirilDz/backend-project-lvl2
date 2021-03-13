@@ -9,17 +9,14 @@ export default (filePath1, filePath2, formatter = 'stylish') => {
   const treeDifference = treeDifferenceBuilder(parsedData[0], parsedData[1]);
 
   if (formatter === 'stylish') {
-    console.log(stylish(treeDifference))
     return stylish(treeDifference);
   }
 
   if (formatter === 'plain') {
-    console.log(plain(treeDifference))
     return plain(treeDifference);
   }
 
   if (formatter === 'toJSON') {
-    console.log(toJSON(treeDifference))
     return toJSON(treeDifference);
   }
 
