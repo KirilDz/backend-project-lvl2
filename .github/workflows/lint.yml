@@ -41,6 +41,9 @@ jobs:
         run: |
           make lint
       - name: Test & publish code coverage
+
+        run: |
+          make test
         # Publish code coverage on Code Climate
         # https://github.com/paambaati/codeclimate-action
         uses: paambaati/codeclimate-action@v2.6.0
