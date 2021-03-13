@@ -8,10 +8,6 @@ export default (filePath1, filePath2, formatter = 'stylish') => {
   const parsedData = parse(filePath1, filePath2);
   const treeDifference = treeDifferenceBuilder(parsedData[0], parsedData[1]);
 
-  if (formatter === 'stylish') {
-    return stylish(treeDifference);
-  }
-
   if (formatter === 'plain') {
     return plain(treeDifference);
   }
@@ -20,5 +16,5 @@ export default (filePath1, filePath2, formatter = 'stylish') => {
     return toJSON(treeDifference);
   }
 
-  return treeDifference;
+  return stylish(treeDifference);
 };

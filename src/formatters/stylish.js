@@ -50,7 +50,5 @@ export default (entity) => {
     return acc;
   }, '');
 
-  const result = builder(entity);
-
-  return `{${result}\n}`;
+  return `{${builder(entity)}\n}`;
 };

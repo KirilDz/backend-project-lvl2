@@ -7,6 +7,17 @@ commander
   .description('Compares two configuration files and shows a difference.\n')
   .option('-f, --format <type>', 'output format')
   .arguments('<file1>, <file2>')
-  .action(dfs);
+  .action((file1, file2, options) => {
+    switch (options.format) {
+      case 'plain':
+        console.log(dfs(file1, file2, 'plain'));
+        break;
+      case 'toJSON':
+        console.log(dfs(file1, file2, 'toJSON'));
+        break;
+      default:
+        console.log(dfs(file1, file2));
+    }
+  });
 
 commander.parse(process.argv);
