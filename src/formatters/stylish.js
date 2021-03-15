@@ -1,5 +1,5 @@
 import {
-  spaceMaker, objectToString, isObject, stylishStringCreator,
+  spaceMaker, stylishStringCreator,
 } from '../utils.js';
 
 export default (entity) => {
@@ -17,28 +17,19 @@ export default (entity) => {
     }
 
     if (Object.prototype.hasOwnProperty.call(el, 'added')) {
-      const diffValue = isObject(el.added) ? `{${objectToString(el.added, level)}\n${spaceMaker(level)}}` : el.added;
-
-      acc += stylishStringCreator(level, true, el.key, diffValue, '+ ');
+      acc += stylishStringCreator(level, true, el.key, el.added, '+ ');
     }
 
     if (Object.prototype.hasOwnProperty.call(el, 'removed')) {
-      const diffValue = isObject(el.removed) ? `{${objectToString(el.removed, level)}\n${spaceMaker(level)}}` : el.removed;
-
-      acc += stylishStringCreator(level, true, el.key, diffValue, '- ');
+      acc += stylishStringCreator(level, true, el.key, el.removed, '- ');
     }
 
     if (Object.prototype.hasOwnProperty.call(el, 'same')) {
-      const diffValue = isObject(el.same) ? `{${objectToString(el.same, level)}\n${spaceMaker(level)}}` : el.same;
-
-      acc += stylishStringCreator(level, false, el.key, diffValue, '');
+      acc += stylishStringCreator(level, false, el.key, el.same, '');
     }
 
     if (Object.prototype.hasOwnProperty.call(el, 'updated')) {
-      const firstDiffValue = isObject(el.updated[0]) ? `{${objectToString(el.updated[0], level)}\n${spaceMaker(level)}}` : el.updated[0];
-      const secondDiffValue = isObject(el.updated[1]) ? `{${objectToString(el.updated[1], level)}\n${spaceMaker(level)}}` : el.updated[1];
-
-      acc += `${stylishStringCreator(level, true, el.key, firstDiffValue, '- ')}${stylishStringCreator(level, true, el.key, secondDiffValue, '+ ')}`;
+      acc += `${stylishStringCreator(level, true, el.key, el.updated[0], '- ')}${stylishStringCreator(level, true, el.key, el.updated[1], '+ ')}`;
     }
 
     return acc;

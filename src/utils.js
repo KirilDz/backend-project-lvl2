@@ -83,7 +83,11 @@ const stringCreator = (values, key, value, prop) => {
   return '';
 };
 
-const stylishStringCreator = (level, isWithSign, key, value, sign) => `\n${spaceMaker(level, isWithSign)}${sign}${key}: ${value}`;
+const stylishStringCreator = (level, isWithSign, key, value, sign) => {
+  const diffValue = isObject(value) ? `{${objectToString(value, level)}\n${spaceMaker(level)}}` : value;
+
+  return `\n${spaceMaker(level, isWithSign)}${sign}${key}: ${diffValue}`;
+};
 
 export {
   isObject,
