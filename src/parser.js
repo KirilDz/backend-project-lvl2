@@ -3,17 +3,29 @@ import path from 'path';
 import yaml from 'js-yaml';
 import ini from 'ini';
 
-export default (filepath1, filepath2) => {
-  const extensions = {
-    json: (filePath) => JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf-8')),
-    yml: (filePath) => yaml.load(fs.readFileSync(path.resolve(filePath), 'utf-8')),
-    ini: (filePath) => ini.parse(fs.readFileSync(path.resolve(filePath), 'utf-8')),
-  };
+const readFile = filepath => path.resolve(filepath);
 
-  const filesExtensions = [path.extname(filepath1).slice(1), path.extname(filepath2).slice(1)];
-  const filesPath = [filepath1, filepath2];
+const adsf = (filepath) => {
+  const fullPath = readFile(filepath);
+  const file = fs.readFileSync(fullPath);
+  const data = JSON.parse(file, 'utf-8');
+  console.log(data);
+}
 
-  return filesExtensions.map((el, index) => (Object.prototype.hasOwnProperty.call(extensions, el)
-    ? extensions[el](filesPath[index])
-    : null));
-};
+console.log(adsf('__fixtures__/file1.json'))
+
+// export default (filepath1) => {
+//   const extensions = {
+//     json: (filePath) => JSON.parse(fs.readFileSync(path.resolve(filePath), 'utf-8')),
+//     yml: (filePath) => yaml.load(fs.readFileSync(path.resolve(filePath), 'utf-8')),
+//     ini: (filePath) => ini.parse(fs.readFileSync(path.resolve(filePath), 'utf-8')),
+//   };
+//
+//   const filesExtension = path.extname(filepath1).slice(1);
+//
+//   return Object.prototype.hasOwnProperty.call(extensions, filesExtension)
+//       ? extensions[filesExtension](filepath1)
+//       : null;
+// };
+
+
