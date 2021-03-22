@@ -1,22 +1,30 @@
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import { test } from '@jest/globals';
+import fs from 'fs';
 import diff from '../index.js';
-import stylishExample from '../__fixtures__/stylishExample.js';
-import plainExample from '../__fixtures__/plainExample.js';
-import jsonExample from '../__fixtures__/jsonExample.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 
-test.each([
-  [diff(getFixturePath('file1.json'), getFixturePath('file2.json')), stylishExample],
-  [diff(getFixturePath('file1.yml'), getFixturePath('file2.yml')), stylishExample],
-  [diff(getFixturePath('file1.json'), getFixturePath('file2.json'), 'plain'), plainExample],
-  [diff(getFixturePath('file1.yml'), getFixturePath('file2.yml'), 'plain'), plainExample],
-  [diff(getFixturePath('file1.yml'), getFixturePath('file2.yml'), 'json'), jsonExample],
-])('All formatters tests', (func, expected) => {
-  expect(func).toBe(expected);
+const plainExample = fs.readFileSync(getFixturePath('expected-plain-result.txt')).toString();
+const stylishExample = fs.readFileSync(getFixturePath('expected-stylish-result.txt')).toString();
+const jsonExample = JSON.stringify(JSON.parse(fs.readFileSync(getFixturePath('expected-json-result.json'))));
+
+describe.each([
+  ['json', plainExample, stylishExample, jsonExample],
+  ['yml', plainExample, stylishExample, jsonExample],
+])('Tests list', (format, plainExpected, stylishExpected, jsonExpected) => {
+  test(`Test ${format} format.`, () => {
+    const plainOutput = diff(getFixturePath(`file1.${format}`), getFixturePath(`file2.${format}`), 'plain');
+    expect(plainOutput).toEqual(plainExpected);
+
+    const stylishOutput = diff(getFixturePath(`file1.${format}`), getFixturePath(`file2.${format}`));
+    expect(stylishOutput).toEqual(stylishExpected);
+
+    const jsonOutput = diff(getFixturePath(`file1.${format}`), getFixturePath(`file2.${format}`), 'json');
+    expect(jsonOutput).toEqual(jsonExpected);
+  });
 });

@@ -1,31 +1,35 @@
-import { isObject } from './utils.js';
+import lodash from 'lodash';
 
-export default (firstDoc, secondDoc) => {
+export default (obj1, obj2) => {
   const treeDifferenceBuilder = (firstEl, secondEl) => {
-    const mergeKeys = [...new Set([...Object.keys(firstEl), ...Object.keys(secondEl)])].sort();
+    const mergeKeys = lodash.sortBy(lodash.union(Object.keys(firstEl), Object.keys(secondEl)));
+
+    if (!mergeKeys.length) {
+      return null;
+    }
 
     return mergeKeys.map((key) => {
-      if (isObject(firstEl[key]) && isObject(secondEl[key])) {
+      if (!lodash.has(firstEl, key)) {
+        return { key, type: 'added', value: secondEl[key] };
+      }
+
+      if (!lodash.has(secondEl, key)) {
+        return { key, type: 'removed', value: firstEl[key] };
+      }
+
+      if (lodash.isPlainObject(firstEl[key]) && lodash.isPlainObject(secondEl[key])) {
         const children = treeDifferenceBuilder(firstEl[key], secondEl[key]);
 
         return { key, children };
       }
 
-      if (firstEl[key] === secondEl[key]) {
-        return { key, same: firstEl[key] };
+      if (firstEl[key] !== secondEl[key]) {
+        return { key, type: 'updated', value: [firstEl[key], secondEl[key]] };
       }
 
-      if (!Object.prototype.hasOwnProperty.call(firstEl, key)) {
-        return { key, added: secondEl[key] };
-      }
-
-      if (!Object.prototype.hasOwnProperty.call(secondEl, key)) {
-        return { key, removed: firstEl[key] };
-      }
-
-      return { key, updated: [firstEl[key], secondEl[key]] };
+      return { key, type: 'same', value: firstEl[key] };
     });
   };
 
-  return treeDifferenceBuilder(firstDoc, secondDoc);
+  return treeDifferenceBuilder(obj1, obj2);
 };

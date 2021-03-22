@@ -1,3 +1,5 @@
+import lodash from 'lodash';
+
 const spacesAmountCalculator = (level, spaces = 0, start = 1) => {
   const spaceCoefficient = 4;
 
@@ -12,11 +14,9 @@ const spaceMaker = (level, isWithSign = false) => {
   return ' '.repeat(spacesAmount);
 };
 
-const isObject = (data) => typeof data === 'object' && data !== null && !Array.isArray(data);
-
 const splitObject = (doc) => {
   const builder = (data, parent = null, level = 1) => Object.keys(data).map((el) => {
-    if (isObject(data[el])) {
+    if (lodash.isPlainObject(data[el])) {
       const nextLevel = level + 1;
       const subParent = `${el}`;
       const children = builder(data[el], subParent, nextLevel);
@@ -44,7 +44,7 @@ const objectToString = (entity, level) => {
   const splitData = splitObject(entity);
 
   const builder = (data) => data.reduce((acc, el) => {
-    if (Object.prototype.hasOwnProperty.call(el, 'children')) {
+    if (lodash.has(el, 'children')) {
       const children = builder(el.children);
       acc += `\n${spaceMaker(el.level + level)}${el.name}: {${children}\n${spaceMaker(el.level + level)}}`;
       return acc;
@@ -56,7 +56,7 @@ const objectToString = (entity, level) => {
 };
 
 const valueDefinition = (value) => {
-  if (isObject(value)) {
+  if (lodash.isPlainObject(value)) {
     return '[complex value]';
   }
 
@@ -84,13 +84,12 @@ const stringCreator = (values, key, value, prop) => {
 };
 
 const stylishStringCreator = (level, isWithSign, key, value, sign) => {
-  const diffValue = isObject(value) ? `{${objectToString(value, level)}\n${spaceMaker(level)}}` : value;
+  const diffValue = lodash.isPlainObject(value) ? `{${objectToString(value, level)}\n${spaceMaker(level)}}` : value;
 
-  return `\n${spaceMaker(level, isWithSign)}${sign}${key}: ${diffValue}`;
+  return `\n${spaceMaker(level, isWithSign)}${sign}${key}:${diffValue === '' ? '' : ` ${diffValue}`}`;
 };
 
 export {
-  isObject,
   spaceMaker,
   objectToString,
   stringCreator,

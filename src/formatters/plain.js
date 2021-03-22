@@ -1,23 +1,24 @@
+import lodash from 'lodash';
 import { stringCreator } from '../utils.js';
 
 export default (entity) => {
   const builder = (data, parents = []) => data.reduce((acc, el) => {
-    if (Object.prototype.hasOwnProperty.call(el, 'children')) {
+    if (lodash.has(el, 'children')) {
       const newParents = parents.concat(el.key);
       const children = builder(el.children, newParents);
       acc += children;
     }
-    if (Object.prototype.hasOwnProperty.call(el, 'added')) {
-      acc += stringCreator(parents, el.key, el.added, 'added');
+    if (el.type === 'added') {
+      acc += stringCreator(parents, el.key, el.value, el.type);
     }
-    if (Object.prototype.hasOwnProperty.call(el, 'removed')) {
-      acc += stringCreator(parents, el.key, el.removed, 'removed');
+    if (el.type === 'removed') {
+      acc += stringCreator(parents, el.key, el.value, el.type);
     }
-    if (Object.prototype.hasOwnProperty.call(el, 'updated')) {
-      acc += stringCreator(parents, el.key, el.updated, 'updated');
+    if (el.type === 'updated') {
+      acc += stringCreator(parents, el.key, el.value, el.type);
     }
 
     return acc;
   }, '');
-  return builder(entity);
+  return `${builder(entity)}\n`;
 };
