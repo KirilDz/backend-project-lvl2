@@ -3,7 +3,7 @@ import {
   spaceMaker, stylishStringCreator,
 } from '../utils.js';
 
-export default (entity) => {
+const formatToStylish = (entity) => {
   const firstLevelElements = entity.map((el) => el.key);
 
   const builder = (data, level = 1) => data.reduce((acc, el) => {
@@ -38,3 +38,5 @@ export default (entity) => {
 
   return `{${builder(entity)}\n}\n`;
 };
+
+export default formatToStylish;

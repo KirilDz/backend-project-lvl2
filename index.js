@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import parse from './src/parsers.js';
-import buildDiffTree from './src/treeBuilder.js';
+import treeDifferenceBuilder from './src/treeBuilder.js';
 import formatToStylish from './src/formatters/stylish.js';
 import formatToPlain from './src/formatters/plain.js';
 import formatToJson from './src/formatters/json.js';
@@ -30,7 +30,7 @@ export default (filePath1, filePath2, formatter = 'stylish') => {
   const data1 = extractData(filePath1);
   const data2 = extractData(filePath2);
 
-  const treeDifference = buildDiffTree(parse(data1.data, data1.format),
+  const treeDifference = treeDifferenceBuilder(parse(data1.data, data1.format),
     parse(data2.data, data2.format));
 
   return chooseFormatter(treeDifference, formatter);

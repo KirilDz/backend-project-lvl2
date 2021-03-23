@@ -1,7 +1,7 @@
 import lodash from 'lodash';
 import { stringCreator } from '../utils.js';
 
-export default (entity) => {
+const formatToPlain = (entity) => {
   const builder = (data, parents = []) => data.reduce((acc, el) => {
     if (lodash.has(el, 'children')) {
       const newParents = parents.concat(el.key);
@@ -22,3 +22,5 @@ export default (entity) => {
   }, '');
   return `${builder(entity)}\n`;
 };
+
+export default formatToPlain;
