@@ -1,4 +1,4 @@
-import lodash from 'lodash';
+import _ from 'lodash';
 import {
   spaceMaker, stylishStringCreator,
 } from '../utils.js';
@@ -7,7 +7,7 @@ const formatToStylish = (entity) => {
   const firstLevelElements = entity.map((el) => el.key);
 
   const builder = (data, level = 1) => data.reduce((acc, el) => {
-    if (lodash.has(el, 'children')) {
+    if (_.has(el, 'children')) {
       const nextLevel = firstLevelElements.includes(el.key) ? 2 : level + 1;
 
       const currentLevel = firstLevelElements.includes(el.key) ? 1 : level;
@@ -30,7 +30,7 @@ const formatToStylish = (entity) => {
     }
 
     if (el.type === 'updated') {
-      acc += `${stylishStringCreator(level, true, el.key, el.value[0], '- ')}${stylishStringCreator(level, true, el.key, el.value[1], '+ ')}`;
+      acc += `${stylishStringCreator(level, true, el.key, el.value1, '- ')}${stylishStringCreator(level, true, el.key, el.value2, '+ ')}`;
     }
 
     return acc;

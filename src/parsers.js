@@ -4,11 +4,13 @@ import ini from 'ini';
 const parser = (data, format) => {
   switch (format) {
     case 'json':
-      return JSON.parse(data, 'utf-8');
+      return JSON.parse(data);
     case 'yml':
-      return yaml.load(data, 'utf-8');
+      return yaml.load(data);
+    case 'ini':
+      return ini.parse(data);
     default:
-      return ini.parse(data, 'utf-8');
+      return {};
   }
 };
 

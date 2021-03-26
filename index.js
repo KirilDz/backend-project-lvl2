@@ -2,9 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import parse from './src/parsers.js';
 import treeDifferenceBuilder from './src/treeBuilder.js';
-import formatToStylish from './src/formatters/stylish.js';
-import formatToPlain from './src/formatters/plain.js';
-import formatToJson from './src/formatters/json.js';
+import format from './src/formatters/index.js'
 
 const extractData = (filepath) => {
   const data = fs.readFileSync(path.resolve(filepath));
@@ -15,23 +13,14 @@ const extractData = (filepath) => {
   };
 };
 
-const chooseFormatter = (data, name) => {
-  switch (name) {
-    case 'plain':
-      return formatToPlain(data);
-    case 'json':
-      return formatToJson(data);
-    default:
-      return formatToStylish(data);
-  }
-};
-
 export default (filePath1, filePath2, formatter = 'stylish') => {
   const data1 = extractData(filePath1);
   const data2 = extractData(filePath2);
 
-  const treeDifference = treeDifferenceBuilder(parse(data1.data, data1.format),
-    parse(data2.data, data2.format));
+  const parseData1 = parse(data1.data, data1.format);
+  const parseData2 = parse(data2.data, data2.format);
 
-  return chooseFormatter(treeDifference, formatter);
+  const treeDifference = treeDifferenceBuilder(parseData1, parseData2);
+
+  return format(treeDifference, formatter);
 };
