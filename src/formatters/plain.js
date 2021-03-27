@@ -12,6 +12,8 @@ const valueDefinition = (value) => {
   return `${value}`;
 };
 
+const parentsToString = (parents, key) => (parents.length > 0 ? `${parents.join('.')}.${key}` : `${key}`);
+
 const formatToPlain = (entity) => {
   const builder = (data, parents = []) => data.flatMap((el) => {
     if (_.has(el, 'children')) {
@@ -19,16 +21,13 @@ const formatToPlain = (entity) => {
       return builder(el.children, newParents);
     }
     if (el.type === 'added') {
-      const valuesString = parents.length > 0 ? `${parents.join('.')}.${el.key}` : `${el.key}`;
-      return `\nProperty '${valuesString}' was added with value: ${valueDefinition(el.value)}`;
+      return `\nProperty '${parentsToString(parents, el.key)}' was added with value: ${valueDefinition(el.value)}`;
     }
     if (el.type === 'removed') {
-      const valuesString = parents.length > 0 ? `${parents.join('.')}.${el.key}` : `${el.key}`;
-      return `\nProperty '${valuesString}' was removed`;
+      return `\nProperty '${parentsToString(parents, el.key)}' was removed`;
     }
     if (el.type === 'updated') {
-      const valuesString = parents.length > 0 ? `${parents.join('.')}.${el.key}` : `${el.key}`;
-      return `\nProperty '${valuesString}' was updated. From ${valueDefinition(el.value1)} to ${valueDefinition(el.value2)}`;
+      return `\nProperty '${parentsToString(parents, el.key)}' was updated. From ${valueDefinition(el.value1)} to ${valueDefinition(el.value2)}`;
     }
 
     return '';

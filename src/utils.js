@@ -55,34 +55,6 @@ const objectToString = (entity, level) => {
   return builder(splitData);
 };
 
-const valueDefinition = (value) => {
-  if (_.isPlainObject(value)) {
-    return '[complex value]';
-  }
-
-  if (typeof value === 'string') {
-    return `'${value}'`;
-  }
-
-  return `${value}`;
-};
-
-const stringCreator = (values, key, value, prop) => {
-  const valuesString = values.length > 0 ? `${values.join('.')}.${key}` : `${key}`;
-
-  switch (prop) {
-    case 'added':
-      return `\nProperty '${valuesString}' was added with value: ${valueDefinition(value)}`;
-    case 'removed':
-      return `\nProperty '${valuesString}' was removed`;
-    case 'updated':
-      return `\nProperty '${valuesString}' was updated. From ${valueDefinition(value[0])} to ${valueDefinition(value[1])}`;
-    default:
-      break;
-  }
-  return '';
-};
-
 const stylishStringCreator = (level, isWithSign, key, value, sign) => {
   const diffValue = _.isPlainObject(value) ? `{${objectToString(value, level)}\n${spaceMaker(level)}}` : value;
 
@@ -92,6 +64,5 @@ const stylishStringCreator = (level, isWithSign, key, value, sign) => {
 export {
   spaceMaker,
   objectToString,
-  stringCreator,
   stylishStringCreator,
 };
