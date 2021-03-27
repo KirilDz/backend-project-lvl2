@@ -23,7 +23,9 @@ const treeDifferenceBuilder = (firstEl, secondEl) => {
     }
 
     if (!_.isEqual(firstEl[key], secondEl[key])) {
-      return { key, type: 'updated', value1: firstEl[key], value2: secondEl[key] };
+      return {
+        key, type: 'updated', value1: firstEl[key], value2: secondEl[key],
+      };
     }
 
     return { key, type: 'same', value: firstEl[key] };
