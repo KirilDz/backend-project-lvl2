@@ -1,7 +1,9 @@
-import _ from 'lodash';
+const formatValue = (value) => {
+  if (value === null) {
+    return 'null';
+  }
 
-const valueDefinition = (value) => {
-  if (_.isPlainObject(value)) {
+  if (typeof value === 'object') {
     return '[complex value]';
   }
 
@@ -9,31 +11,32 @@ const valueDefinition = (value) => {
     return `'${value}'`;
   }
 
-  return `${value}`;
+  return value;
 };
 
-const parentsToString = (parents, key) => (parents.length > 0 ? `${parents.join('.')}.${key}` : `${key}`);
+const parentsToString = (parents, key) => `${parents.concat(key).join('.')}`;
 
 const formatToPlain = (entity) => {
   const builder = (data, parents = []) => data.flatMap((el) => {
-    if (_.has(el, 'children')) {
-      const newParents = parents.concat(el.key);
-      return builder(el.children, newParents);
+    switch (el.type) {
+      case 'children': {
+        const newParents = parents.concat(el.key);
+        return builder(el.children, newParents);
+      }
+      case 'added':
+        return `Property '${parentsToString(parents, el.key)}' was added with value: ${formatValue(el.value)}`;
+      case 'removed':
+        return `Property '${parentsToString(parents, el.key)}' was removed`;
+      case 'updated':
+        return `Property '${parentsToString(parents, el.key)}' was updated. From ${formatValue(el.value1)} to ${formatValue(el.value2)}`;
+      case 'same':
+        return [];
+      default:
+        throw new Error(`Unknown type ${el.type}!`);
     }
-    if (el.type === 'added') {
-      return `\nProperty '${parentsToString(parents, el.key)}' was added with value: ${valueDefinition(el.value)}`;
-    }
-    if (el.type === 'removed') {
-      return `\nProperty '${parentsToString(parents, el.key)}' was removed`;
-    }
-    if (el.type === 'updated') {
-      return `\nProperty '${parentsToString(parents, el.key)}' was updated. From ${valueDefinition(el.value1)} to ${valueDefinition(el.value2)}`;
-    }
-
-    return '';
   });
 
-  return builder(entity).join('');
+  return `${builder(entity).join('\n')}\n`;
 };
 
 export default formatToPlain;

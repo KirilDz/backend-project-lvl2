@@ -1,35 +1,31 @@
 import _ from 'lodash';
 
-const treeDifferenceBuilder = (firstEl, secondEl) => {
-  const mergeKeys = _.sortBy(_.union(Object.keys(firstEl), Object.keys(secondEl)));
-
-  if (!mergeKeys.length) {
-    return null;
-  }
+const buildDiff = (obj1, obj2) => {
+  const mergeKeys = _.sortBy(_.union(Object.keys(obj1), Object.keys(obj2)));
 
   return mergeKeys.map((key) => {
-    if (!_.has(firstEl, key)) {
-      return { key, type: 'added', value: secondEl[key] };
+    if (!_.has(obj1, key)) {
+      return { key, type: 'added', value: obj2[key] };
     }
 
-    if (!_.has(secondEl, key)) {
-      return { key, type: 'removed', value: firstEl[key] };
+    if (!_.has(obj2, key)) {
+      return { key, type: 'removed', value: obj1[key] };
     }
 
-    if (_.isPlainObject(firstEl[key]) && _.isPlainObject(secondEl[key])) {
-      const children = treeDifferenceBuilder(firstEl[key], secondEl[key]);
+    if (_.isPlainObject(obj1[key]) && _.isPlainObject(obj2[key])) {
+      const children = buildDiff(obj1[key], obj2[key]);
 
-      return { key, children };
+      return { key, children, type: 'children' };
     }
 
-    if (!_.isEqual(firstEl[key], secondEl[key])) {
+    if (!_.isEqual(obj1[key], obj2[key])) {
       return {
-        key, type: 'updated', value1: firstEl[key], value2: secondEl[key],
+        key, type: 'updated', value1: obj1[key], value2: obj2[key],
       };
     }
 
-    return { key, type: 'same', value: firstEl[key] };
+    return { key, type: 'same', value: obj1[key] };
   });
 };
 
-export default treeDifferenceBuilder;
+export default buildDiff;

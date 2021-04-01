@@ -1,7 +1,7 @@
 import yaml from 'js-yaml';
 import ini from 'ini';
 
-const parser = (data, format) => {
+const parse = (data, format) => {
   switch (format) {
     case 'json':
       return JSON.parse(data);
@@ -10,8 +10,8 @@ const parser = (data, format) => {
     case 'ini':
       return ini.parse(data);
     default:
-      return {};
+      throw new Error(`Unknown format: ${format}`);
   }
 };
 
-export default parser;
+export default parse;
