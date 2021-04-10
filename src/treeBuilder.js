@@ -1,9 +1,9 @@
 import _ from 'lodash';
 
 const buildDiff = (obj1, obj2) => {
-  const mergeKeys = _.sortBy(_.union(Object.keys(obj1), Object.keys(obj2)));
+  const uniqueKeys = _.sortBy(_.union(Object.keys(obj1), Object.keys(obj2)));
 
-  return mergeKeys.map((key) => {
+  return uniqueKeys.map((key) => {
     if (!_.has(obj1, key)) {
       return { key, type: 'added', value: obj2[key] };
     }

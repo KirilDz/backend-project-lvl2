@@ -14,21 +14,19 @@ const formatValue = (value) => {
   return value;
 };
 
-const parentsToString = (parents, key) => `${parents.concat(key).join('.')}`;
+const getFullPath = (parents, key) => `${parents.concat(key).join('.')}`;
 
-const formatToPlain = (entity) => {
-  const builder = (data, parents = []) => data.flatMap((el) => {
+const formatToPlain = (nodes) => {
+  const builder = (data, paths = []) => data.flatMap((el) => {
     switch (el.type) {
-      case 'children': {
-        const newParents = parents.concat(el.key);
-        return builder(el.children, newParents);
-      }
+      case 'children':
+        return builder(el.children, paths.concat(el.key));
       case 'added':
-        return `Property '${parentsToString(parents, el.key)}' was added with value: ${formatValue(el.value)}`;
+        return `Property '${getFullPath(paths, el.key)}' was added with value: ${formatValue(el.value)}`;
       case 'removed':
-        return `Property '${parentsToString(parents, el.key)}' was removed`;
+        return `Property '${getFullPath(paths, el.key)}' was removed`;
       case 'updated':
-        return `Property '${parentsToString(parents, el.key)}' was updated. From ${formatValue(el.value1)} to ${formatValue(el.value2)}`;
+        return `Property '${getFullPath(paths, el.key)}' was updated. From ${formatValue(el.value1)} to ${formatValue(el.value2)}`;
       case 'same':
         return [];
       default:
@@ -36,7 +34,11 @@ const formatToPlain = (entity) => {
     }
   });
 
-  return `${builder(entity).join('\n')}\n`;
+  const result =  builder(nodes);
+
+  console.log( 'this is ',result)
+
+  return builder(nodes).join('\n');
 };
 
 export default formatToPlain;

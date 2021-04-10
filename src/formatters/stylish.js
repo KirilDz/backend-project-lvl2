@@ -1,31 +1,5 @@
 import _ from 'lodash';
 
-const splitObject = (doc) => {
-  const builder = (data, parent = null, level = 1) => Object.keys(data).map((el) => {
-    if (_.isPlainObject(data[el])) {
-      const nextLevel = level + 1;
-      const subParent = `${el}`;
-      const children = builder(data[el], subParent, nextLevel);
-
-      return {
-        name: `${el}`,
-        value: 'obj',
-        level,
-        parent: subParent,
-        children,
-      };
-    }
-    return {
-      name: `${el}`,
-      value: `${data[el]}`,
-      level,
-      parent,
-    };
-  });
-
-  return builder(doc);
-};
-
 const spacesAmountCalculator = (level, spaces = 0, start = 1) => {
   const spaceCoefficient = 4;
 
@@ -40,24 +14,24 @@ const spaceMaker = (level, isWithSign = false) => {
   return ' '.repeat(spacesAmount);
 };
 
-const objectToString = (entity, level) => {
-  const splitData = splitObject(entity);
-
-  const builder = (data) => data.flatMap((el) => {
-    if (el.value === 'obj') {
-      const children = builder(el.children);
-      return `\n${spaceMaker(el.level + level)}${el.name}: {${children}\n${spaceMaker(el.level + level)}}`;
+const objectToString = (obj, level) => {
+  const iter = (cur, depth) => Object.entries(cur).flatMap(([key, value]) => {
+    if (typeof value === 'object' && value !== null) {
+      const deepper = iter(value, depth + 1).join('\n');
+      return `${spaceMaker(depth + level)}${ key }: {\n${ deepper }\n${spaceMaker(depth + level)}}`;
     }
-    return `\n${spaceMaker(el.level + level)}${el.name}: ${el.value}`;
+    const elem = `${spaceMaker(depth + level)}${ key }: ${ value }`;
+    return elem;
   });
 
-  return builder(splitData).join(' ');
+  const result = iter(obj, 1).join('\n');
+  return result;
 };
 
 const stylishStringCreator = (level, isWithSign, key, value, sign) => {
-  const diffValue = _.isPlainObject(value) ? `{${objectToString(value, level)}\n${spaceMaker(level)}}` : value;
+  const diffValue = _.isPlainObject(value) ? `{\n${objectToString(value, level)}\n${spaceMaker(level)}}` : value;
 
-  return `\n${spaceMaker(level, isWithSign)}${sign}${key}:${diffValue === '' ? '' : ` ${diffValue}`}`;
+  return `${spaceMaker(level, isWithSign)}${sign}${key}:${diffValue === '' ? '' : ` ${diffValue}`}`;
 };
 
 const formatToStylish = (entity) => {
@@ -68,9 +42,9 @@ const formatToStylish = (entity) => {
       case 'children': {
         const nextLevel = firstLevelElements.includes(el.key) ? 2 : level + 1;
         const currentLevel = firstLevelElements.includes(el.key) ? 1 : level;
-        const innerData = builder(el.children, nextLevel);
+        const innerData = builder(el.children, nextLevel).join('\n');
 
-        return `\n${spaceMaker(currentLevel)}${el.key}: {${innerData}\n${spaceMaker(currentLevel)}}`;
+        return `${spaceMaker(currentLevel)}${el.key}: {\n${innerData}\n${spaceMaker(currentLevel)}}`;
       }
       case 'added':
         return stylishStringCreator(level, true, el.key, el.value, '+ ');
@@ -79,13 +53,13 @@ const formatToStylish = (entity) => {
       case 'same':
         return stylishStringCreator(level, false, el.key, el.value, '');
       case 'updated':
-        return `${stylishStringCreator(level, true, el.key, el.value1, '- ')}${stylishStringCreator(level, true, el.key, el.value2, '+ ')}`;
+        return `${stylishStringCreator(level, true, el.key, el.value1, '- ')}\n${stylishStringCreator(level, true, el.key, el.value2, '+ ')}`;
       default:
         throw new Error(`Unknown type ${el.type}`);
     }
   });
 
-  return `{${builder(entity).join(' ')}\n}\n`;
+  return `{\n${builder(entity).join('\n')}\n}`;
 };
 
 export default formatToStylish;
