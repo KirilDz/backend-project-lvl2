@@ -34,10 +34,6 @@ const formatToPlain = (nodes) => {
     }
   });
 
-  const result =  builder(nodes);
-
-  console.log( 'this is ',result)
-
   return builder(nodes).join('\n');
 };
 

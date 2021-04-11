@@ -14,24 +14,18 @@ const spaceMaker = (level, isWithSign = false) => {
   return ' '.repeat(spacesAmount);
 };
 
-const objectToString = (obj, level) => {
-  const iter = (cur, depth) => Object.entries(cur).flatMap(([key, value]) => {
+const formatValue = (key1, value1, level, sign) => {
+  const objectToString = (cur, depth) => Object.entries(cur).flatMap(([key, value]) => {
     if (typeof value === 'object' && value !== null) {
-      const deepper = iter(value, depth + 1).join('\n');
-      return `${spaceMaker(depth + level)}${ key }: {\n${ deepper }\n${spaceMaker(depth + level)}}`;
+      const deepper = objectToString(value, depth + 1).join('\n');
+      return `${spaceMaker(depth + level)}${key}: {\n${deepper}\n${spaceMaker(depth + level)}}`;
     }
-    const elem = `${spaceMaker(depth + level)}${ key }: ${ value }`;
-    return elem;
+    return `${spaceMaker(depth + level)}${key}: ${value}`;
   });
 
-  const result = iter(obj, 1).join('\n');
-  return result;
-};
+  const valueToString = `${spaceMaker(level)}${sign}${key1}:${value1 === '' ? '' : ` ${value1}`}`;
 
-const stylishStringCreator = (level, isWithSign, key, value, sign) => {
-  const diffValue = _.isPlainObject(value) ? `{\n${objectToString(value, level)}\n${spaceMaker(level)}}` : value;
-
-  return `${spaceMaker(level, isWithSign)}${sign}${key}:${diffValue === '' ? '' : ` ${diffValue}`}`;
+  return _.isPlainObject(value1) ? `${spaceMaker(level)}${sign}${key1}: {\n${objectToString(value1, level).join('\n')}\n${spaceMaker(level)}}` : valueToString;
 };
 
 const formatToStylish = (entity) => {
@@ -46,14 +40,16 @@ const formatToStylish = (entity) => {
 
         return `${spaceMaker(currentLevel)}${el.key}: {\n${innerData}\n${spaceMaker(currentLevel)}}`;
       }
-      case 'added':
-        return stylishStringCreator(level, true, el.key, el.value, '+ ');
-      case 'removed':
-        return stylishStringCreator(level, true, el.key, el.value, '- ');
+      case 'added': {
+        return `${formatValue(el.key, el.value, level, '+ ')}`;
+      }
+      case 'removed': {
+        return `${formatValue(el.key, el.value, level, '- ')}`;
+      }
       case 'same':
-        return stylishStringCreator(level, false, el.key, el.value, '');
+        return `${formatValue(el.key, el.value, level, '- ')}`;
       case 'updated':
-        return `${stylishStringCreator(level, true, el.key, el.value1, '- ')}\n${stylishStringCreator(level, true, el.key, el.value2, '+ ')}`;
+        return `${formatValue(el.key, el.value, level, '- ')}\n${formatValue(el.key, el.value2, level, '+ ')}`;
       default:
         throw new Error(`Unknown type ${el.type}`);
     }
