@@ -18,9 +18,9 @@ const expectedStylishResult = readFixture('expected-stylish-result.txt');
 const expectedJSONResult = readFixture('expected-json-result.json');
 
 describe.each([
-  ['json', expectedJSONResult],
-  ['yml', expectedJSONResult],
-])('Tests formatters with different formats', (format,jsonExpected) => {
+  ['json', expectedJSONResult, expectedStylishResult],
+  ['yml', expectedJSONResult, expectedStylishResult],
+])('Tests formatters with different formats', (format,jsonExpected, stylishExpected) => {
 
   const fixturePath1 = getFixturePath(`file1.${format}`);
   const fixturePath2 = getFixturePath(`file2.${format}`);
@@ -28,12 +28,12 @@ describe.each([
   test(`Test input ${format} format.`, () => {
     // const plainOutput = diff(fixturePath1, fixturePath2, 'plain');
     // expect(plainOutput).toEqual(plainExpected);
-    //
-    // const stylishOutputDefault = diff(fixturePath1, fixturePath2);
-    // expect(stylishOutputDefault).toEqual(stylishExpected);
-    //
-    // const stylishOutputClearly = diff(fixturePath1, fixturePath2, 'stylish');
-    // expect(stylishOutputClearly).toEqual(stylishExpected);
+
+    const stylishOutputDefault = diff(fixturePath1, fixturePath2);
+    expect(stylishOutputDefault).toEqual(stylishExpected);
+
+    const stylishOutputClearly = diff(fixturePath1, fixturePath2, 'stylish');
+    expect(stylishOutputClearly).toEqual(stylishExpected);
 
     const jsonOutput = diff(fixturePath1, fixturePath2, 'json');
     expect(jsonOutput).toEqual(jsonExpected);

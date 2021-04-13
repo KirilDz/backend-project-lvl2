@@ -5,7 +5,8 @@ import treeDifferenceBuilder from './src/treeBuilder.js';
 import format from './src/formatters/index.js';
 
 const readData = (filepath) => {
-  const data = fs.readFileSync(path.resolve(filepath));
+  const absolutePath = path.resolve(process.cwd(), filepath);
+  const data = fs.readFileSync(absolutePath);
   const fileFormat = path.extname(filepath).slice(1);
   return {
     data,

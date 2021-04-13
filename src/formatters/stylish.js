@@ -47,7 +47,7 @@ const formatToStylish = (entity) => {
         return `${formatValue(el.key, el.value, level, '- ')}`;
       }
       case 'same':
-        return `${formatValue(el.key, el.value, level, '- ')}`;
+        return `${formatValue(el.key, el.value, level, ' ')}`;
       case 'updated':
         return `${formatValue(el.key, el.value, level, '- ')}\n${formatValue(el.key, el.value2, level, '+ ')}`;
       default:
