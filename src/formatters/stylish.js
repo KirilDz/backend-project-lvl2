@@ -14,18 +14,19 @@ const spaceMaker = (level, isWithSign = false) => {
   return ' '.repeat(spacesAmount);
 };
 
-const formatValue = (key1, value1, level, sign) => {
+const formatValue = (key1, value1, level, sign, isWithSign) => {
   const objectToString = (cur, depth) => Object.entries(cur).flatMap(([key, value]) => {
     if (typeof value === 'object' && value !== null) {
+
       const deepper = objectToString(value, depth + 1).join('\n');
       return `${spaceMaker(depth + level)}${key}: {\n${deepper}\n${spaceMaker(depth + level)}}`;
     }
     return `${spaceMaker(depth + level)}${key}: ${value}`;
   });
 
-  const valueToString = `${spaceMaker(level)}${sign}${key1}:${value1 === '' ? '' : ` ${value1}`}`;
+  const valueToString = `${spaceMaker(level, isWithSign)}${sign}${key1}:${value1 === '' ? '' : ` ${value1}`}`;
 
-  return _.isPlainObject(value1) ? `${spaceMaker(level)}${sign}${key1}: {\n${objectToString(value1, level).join('\n')}\n${spaceMaker(level)}}` : valueToString;
+  return _.isPlainObject(value1) ? `${spaceMaker(level, isWithSign)}${sign}${key1}: {\n${objectToString(value1, 1).join('\n')}\n${spaceMaker(level)}}` : valueToString;
 };
 
 const formatToStylish = (entity) => {
@@ -41,15 +42,15 @@ const formatToStylish = (entity) => {
         return `${spaceMaker(currentLevel)}${el.key}: {\n${innerData}\n${spaceMaker(currentLevel)}}`;
       }
       case 'added': {
-        return `${formatValue(el.key, el.value, level, '+ ')}`;
+        return `${formatValue(el.key, el.value, level, '+ ', true)}`;
       }
       case 'removed': {
-        return `${formatValue(el.key, el.value, level, '- ')}`;
+        return `${formatValue(el.key, el.value, level, '- ', true)}`;
       }
       case 'same':
-        return `${formatValue(el.key, el.value, level, ' ')}`;
+        return `${formatValue(el.key, el.value, level, '')}`;
       case 'updated':
-        return `${formatValue(el.key, el.value, level, '- ')}\n${formatValue(el.key, el.value2, level, '+ ')}`;
+        return `${formatValue(el.key, el.value1, level, '- ', true)}\n${formatValue(el.key, el.value2, level, '+ ', true)}`;
       default:
         throw new Error(`Unknown type ${el.type}`);
     }
