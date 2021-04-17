@@ -7,11 +7,9 @@ import diff from '../index.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const readFixture = (fixtureName) => {
-  return fs.readFileSync(getFixturePath(fixtureName), 'utf-8');
-};
-
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+
+const readFixture = (fixtureName) => fs.readFileSync(getFixturePath(fixtureName), 'utf-8');
 
 const expectedPlainResult = readFixture('expected-plain-result.txt');
 const expectedStylishResult = readFixture('expected-stylish-result.txt');
@@ -36,8 +34,17 @@ describe.each(['json', 'yml'])('getDiff tests for %s input format', (inputFormat
   test('JSON output formatter', () => {
     expect(diff(fixturePath1, fixturePath2, 'json')).toEqual(expectedJSONResult);
   });
-  //
-  // test('Valid output JSON', () => {
-  //
-  // })
+
+  test('Valid output JSON', () => {
+    const jsonDiffResult = diff(fixturePath1, fixturePath2, 'json');
+    const isJsonValid = (data) => {
+      try {
+        JSON.parse(data);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    };
+    expect(isJsonValid(jsonDiffResult)).toEqual(true);
+  });
 });

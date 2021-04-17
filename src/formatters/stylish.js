@@ -17,7 +17,6 @@ const spaceMaker = (level, isWithSign = false) => {
 const formatValue = (key1, value1, level, sign, isWithSign) => {
   const objectToString = (cur, depth) => Object.entries(cur).flatMap(([key, value]) => {
     if (typeof value === 'object' && value !== null) {
-
       const deepper = objectToString(value, depth + 1).join('\n');
       return `${spaceMaker(depth + level)}${key}: {\n${deepper}\n${spaceMaker(depth + level)}}`;
     }
