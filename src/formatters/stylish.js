@@ -1,61 +1,55 @@
 import _ from 'lodash';
 
-const spacesAmountCalculator = (level, spaces = 0, start = 1) => {
-  const spaceCoefficient = 4;
+const getIndent = (depth) => ' '.repeat(4 * depth - 2);
 
-  if (level < start) return spaces;
-  return spacesAmountCalculator(level, spaces + spaceCoefficient, start + 1);
-};
+const formatValue = (key1, value1, depth) => {
+  if (!_.isPlainObject(value1)) {
+    return `${key1}:${value1 === '' ? '' : ` ${value1}`}`;
+  }
 
-const spaceMaker = (level, isWithSign = false) => {
-  const minusSign = isWithSign ? 2 : 0;
-  const spacesAmount = spacesAmountCalculator(level) - minusSign;
-
-  return ' '.repeat(spacesAmount);
-};
-
-const formatValue = (key1, value1, level, sign, isWithSign) => {
-  const objectToString = (cur, depth) => Object.entries(cur).flatMap(([key, value]) => {
+  const objectToString = (cur, objectDepth) => Object.entries(cur).flatMap(([key, value]) => {
     if (typeof value === 'object' && value !== null) {
-      const deepper = objectToString(value, depth + 1).join('\n');
-      return `${spaceMaker(depth + level)}${key}: {\n${deepper}\n${spaceMaker(depth + level)}}`;
+      const deepper = objectToString(value, objectDepth + 1).join('\n');
+      return `${getIndent(depth + objectDepth)}  ${key}: {\n${deepper}\n${getIndent(depth + objectDepth)}  }`;
     }
-    return `${spaceMaker(depth + level)}${key}: ${value}`;
+    return `${getIndent(depth + objectDepth)}  ${key}: ${value}`;
   });
 
-  const valueToString = `${spaceMaker(level, isWithSign)}${sign}${key1}:${value1 === '' ? '' : ` ${value1}`}`;
-
-  return _.isPlainObject(value1) ? `${spaceMaker(level, isWithSign)}${sign}${key1}: {\n${objectToString(value1, 1).join('\n')}\n${spaceMaker(level)}}` : valueToString;
+  return `${key1}: {\n${objectToString(value1, 1).join('\n')}\n${getIndent(depth)}  }`;
 };
 
-const formatToStylish = (entity) => {
-  const firstLevelElements = entity.map((el) => el.key);
+const formatToStylish = (diffs) => {
+  const firstLevelElements = diffs.map((el) => el.key);
 
-  const builder = (data, level = 1) => data.flatMap((el) => {
-    switch (el.type) {
+  const builder = (nodes, depth = 1) => nodes.flatMap((node) => {
+    switch (node.type) {
       case 'children': {
-        const nextLevel = firstLevelElements.includes(el.key) ? 2 : level + 1;
-        const currentLevel = firstLevelElements.includes(el.key) ? 1 : level;
-        const innerData = builder(el.children, nextLevel).join('\n');
+        const nextLevel = firstLevelElements.includes(node.key) ? 2 : depth + 1;
+        const currentLevel = firstLevelElements.includes(node.key) ? 1 : depth;
+        const innerData = builder(node.children, nextLevel).join('\n');
 
-        return `${spaceMaker(currentLevel)}${el.key}: {\n${innerData}\n${spaceMaker(currentLevel)}}`;
+        return `${getIndent(currentLevel)}  ${node.key}: {\n${innerData}\n${getIndent(currentLevel)}  }`;
       }
       case 'added': {
-        return `${formatValue(el.key, el.value, level, '+ ', true)}`;
+        return `${getIndent(depth)}+ ${formatValue(node.key, node.value, depth)}`;
       }
       case 'removed': {
-        return `${formatValue(el.key, el.value, level, '- ', true)}`;
+        return `${getIndent(depth)}- ${formatValue(node.key, node.value, depth)}`;
       }
-      case 'same':
-        return `${formatValue(el.key, el.value, level, '')}`;
-      case 'updated':
-        return `${formatValue(el.key, el.value1, level, '- ', true)}\n${formatValue(el.key, el.value2, level, '+ ', true)}`;
+      case 'same': {
+        return `${getIndent(depth)}  ${formatValue(node.key, node.value, depth)}`;
+      }
+      case 'updated': {
+        const removed = `${getIndent(depth)}- ${formatValue(node.key, node.value1, depth)}`;
+        const added = `${getIndent(depth)}+ ${formatValue(node.key, node.value2, depth)}`;
+        return [removed, added];
+      }
       default:
-        throw new Error(`Unknown type ${el.type}`);
+        throw new Error(`Unknown type ${node.type}`);
     }
   });
 
-  return `{\n${builder(entity).join('\n')}\n}`;
+  return `{\n${builder(diffs).join('\n')}\n}`;
 };
 
 export default formatToStylish;
