@@ -2,20 +2,18 @@ import _ from 'lodash';
 
 const getIndent = (depth) => ' '.repeat(4 * depth - 2);
 
-const formatValue = (key1, value1, depth) => {
+const formatValue = (value1, depth) => {
   if (!_.isPlainObject(value1)) {
-    return `${key1}:${value1 === '' ? '' : ` ${value1}`}`;
+    return `:${value1 === '' ? '' : ` ${value1}`}`;
   }
 
-  const objectToString = (cur, objectDepth) => Object.entries(cur).flatMap(([key, value]) => {
-    if (typeof value === 'object' && value !== null) {
-      const deepper = objectToString(value, objectDepth + 1).join('\n');
-      return `${getIndent(depth + objectDepth)}  ${key}: {\n${deepper}\n${getIndent(depth + objectDepth)}  }`;
-    }
-    return `${getIndent(depth + objectDepth)}  ${key}: ${value}`;
-  });
-
-  return `${key1}: {\n${objectToString(value1, 1).join('\n')}\n${getIndent(depth)}  }`;
+  return Object.entries(value1).flatMap(([key, value]) => {
+      if (_.isPlainObject(value)) {
+        const deepper = formatValue(value, depth + 1);
+        return `\n${getIndent(depth + 1)}  ${key}: {${deepper}\n${getIndent(depth + 1)}  }`;
+      }
+      return `\n${getIndent(depth + 1)}  ${key}: ${value}`;
+  }).join('\n');
 };
 
 const formatToStylish = (diffs) => {
@@ -31,17 +29,17 @@ const formatToStylish = (diffs) => {
         return `${getIndent(currentLevel)}  ${node.key}: {\n${innerData}\n${getIndent(currentLevel)}  }`;
       }
       case 'added': {
-        return `${getIndent(depth)}+ ${formatValue(node.key, node.value, depth)}`;
+        return `${getIndent(depth)}+ ${node.key}${formatValue(node.value, depth)}`;
       }
       case 'removed': {
-        return `${getIndent(depth)}- ${formatValue(node.key, node.value, depth)}`;
+        return `${getIndent(depth)}- ${node.key}${formatValue(node.value, depth)}`;
       }
       case 'same': {
-        return `${getIndent(depth)}  ${formatValue(node.key, node.value, depth)}`;
+        return `${getIndent(depth)}  ${node.key}${formatValue(node.value, depth)}`;
       }
       case 'updated': {
-        const removed = `${getIndent(depth)}- ${formatValue(node.key, node.value1, depth)}`;
-        const added = `${getIndent(depth)}+ ${formatValue(node.key, node.value2, depth)}`;
+        const removed = `${getIndent(depth)}- ${node.key}${formatValue(node.value1, depth)}`;
+        const added = `${getIndent(depth)}+ ${node.key}${formatValue(node.value2, depth)}`;
         return [removed, added];
       }
       default:
