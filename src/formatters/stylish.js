@@ -4,16 +4,12 @@ const getIndent = (depth) => ' '.repeat(4 * depth - 2);
 
 const formatValue = (value1, depth) => {
   if (!_.isPlainObject(value1)) {
-    return `:${value1 === '' ? '' : ` ${value1}`}`;
+    return `${value1}`;
   }
 
-  return Object.entries(value1).flatMap(([key, value]) => {
-      if (_.isPlainObject(value)) {
-        const deepper = formatValue(value, depth + 1);
-        return `\n${getIndent(depth + 1)}  ${key}: {${deepper}\n${getIndent(depth + 1)}  }`;
-      }
-      return `\n${getIndent(depth + 1)}  ${key}: ${value}`;
-  }).join('\n');
+  const getKeys = Object.entries(value1).flatMap(([key, value]) => `${getIndent(depth + 1)}  ${key}: ${formatValue(value, depth + 1)}`);
+
+  return `{\n${getKeys.join('\n')}\n${getIndent(depth)}  }`;
 };
 
 const formatToStylish = (diffs) => {
@@ -29,17 +25,17 @@ const formatToStylish = (diffs) => {
         return `${getIndent(currentLevel)}  ${node.key}: {\n${innerData}\n${getIndent(currentLevel)}  }`;
       }
       case 'added': {
-        return `${getIndent(depth)}+ ${node.key}${formatValue(node.value, depth)}`;
+        return `${getIndent(depth)}+ ${node.key}: ${formatValue(node.value, depth)}`;
       }
       case 'removed': {
-        return `${getIndent(depth)}- ${node.key}${formatValue(node.value, depth)}`;
+        return `${getIndent(depth)}- ${node.key}: ${formatValue(node.value, depth)}`;
       }
       case 'same': {
-        return `${getIndent(depth)}  ${node.key}${formatValue(node.value, depth)}`;
+        return `${getIndent(depth)}  ${node.key}: ${formatValue(node.value, depth)}`;
       }
       case 'updated': {
-        const removed = `${getIndent(depth)}- ${node.key}${formatValue(node.value1, depth)}`;
-        const added = `${getIndent(depth)}+ ${node.key}${formatValue(node.value2, depth)}`;
+        const removed = `${getIndent(depth)}- ${node.key}: ${formatValue(node.value1, depth)}`;
+        const added = `${getIndent(depth)}+ ${node.key}: ${formatValue(node.value2, depth)}`;
         return [removed, added];
       }
       default:
