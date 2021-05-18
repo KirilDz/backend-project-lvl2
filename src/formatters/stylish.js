@@ -2,27 +2,23 @@ import _ from 'lodash';
 
 const getIndent = (depth) => ' '.repeat(4 * depth - 2);
 
-const formatValue = (value1, depth) => {
-  if (!_.isPlainObject(value1)) {
-    return `${value1}`;
+const formatValue = (data, depth) => {
+  if (!_.isPlainObject(data)) {
+    return `${data}`;
   }
 
-  const getKeys = Object.entries(value1).flatMap(([key, value]) => `${getIndent(depth + 1)}  ${key}: ${formatValue(value, depth + 1)}`);
+  const result = Object.entries(data).flatMap(([key, value]) => `${getIndent(depth + 1)}  ${key}: ${formatValue(value, depth + 1)}`);
 
-  return `{\n${getKeys.join('\n')}\n${getIndent(depth)}  }`;
+  return `{\n${result.join('\n')}\n${getIndent(depth)}  }`;
 };
 
 const formatToStylish = (diffs) => {
-  const firstLevelElements = diffs.map((el) => el.key);
-
   const builder = (nodes, depth = 1) => nodes.flatMap((node) => {
     switch (node.type) {
       case 'children': {
-        const nextLevel = firstLevelElements.includes(node.key) ? 2 : depth + 1;
-        const currentLevel = firstLevelElements.includes(node.key) ? 1 : depth;
-        const innerData = builder(node.children, nextLevel).join('\n');
+        const innerData = builder(node.children, depth + 1).join('\n');
 
-        return `${getIndent(currentLevel)}  ${node.key}: {\n${innerData}\n${getIndent(currentLevel)}  }`;
+        return `${getIndent(depth)}  ${node.key}: {\n${innerData}\n${getIndent(depth)}  }`;
       }
       case 'added': {
         return `${getIndent(depth)}+ ${node.key}: ${formatValue(node.value, depth)}`;

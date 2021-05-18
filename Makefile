@@ -1,6 +1,6 @@
 install: install-deps
 run:
-	bin/nodejs-package.js 10
+	npm publish --dry-run
 
 install-deps:
 	npm ci
