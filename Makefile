@@ -1,6 +1,4 @@
 install: install-deps
-run:
-	npm publish --dry-run
 
 install-deps:
 	npm ci
@@ -17,4 +15,4 @@ lint:
 fix:
 	npx eslint . --fix
 publish:
-	npm publish
+	npm --dry-run
